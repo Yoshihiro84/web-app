@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Papers Manager{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 900: '#0f1923', 800: '#121c28', 700: '#182638', 600: '#1e2c3e' },
+            gold: { DEFAULT: '#d4af6e', light: '#e8c88a', dim: 'rgba(212,175,110,0.65)' },
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body class="app-shell min-h-screen">
+  <div class="app-bg" aria-hidden="true"></div>
+  <nav class="app-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center space-x-8 app-nav-links">
+          <a href="/" class="app-brand">Papers Manager</a>
+          <a href="/papers" class="nav-link">Papers</a>
+          <a href="/tags" class="nav-link">Tags</a>
+          <a href="/collections" class="nav-link">Collections</a>
+          <a href="/bibtex/import" class="nav-link">Import</a>
+          <a href="/bibtex/export" class="nav-link">Export</a>
+        </div>
+        <div class="flex items-center">
+          <a href="/papers/new" class="app-cta">+ New Paper</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="{% block main_class %}max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8{% endblock %}">
+    {% block flash %}
+    {% include "partials/_flash.html" ignore missing %}
+    {% endblock %}
+    {% block content %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% if total_pages > 1 %}
+<nav class="flex items-center justify-between mt-8">
+  <div class="text-sm text-[color:var(--text-muted)]">
+    Page {{ page }} of {{ total_pages }} ({{ total_count }} items)
+  </div>
+  <div class="flex gap-2">
+    {% if page > 1 %}
+    <a href="{{ base_url }}?page={{ page - 1 }}{{ extra_params }}" class="page-btn">Previous</a>
+    {% endif %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+      <span class="page-btn page-btn-active">{{ p }}</span>
+      {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+      <a href="{{ base_url }}?page={{ p }}{{ extra_params }}" class="page-btn">{{ p }}</a>
+      {% elif p == 4 or p == total_pages - 3 %}
+      <span class="px-3 py-2 text-sm text-[color:var(--text-muted)]">...</span>
+      {% endif %}
+    {% endfor %}
+    {% if page < total_pages %}
+    <a href="{{ base_url }}?page={{ page + 1 }}{{ extra_params }}" class="page-btn">Next</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}

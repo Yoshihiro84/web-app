@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit Collection{% else %}New Collection{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">{% if editing %}Edit Collection{% else %}New Collection{% endif %}</h1>
+
+  <form method="post" class="space-y-5">
+    <div>
+      <label class="elegant-label">Name *</label>
+      <input type="text" name="name" value="{{ collection.name if collection else '' }}" required
+        class="elegant-input">
+    </div>
+
+    <div>
+      <label class="elegant-label">Description</label>
+      <textarea name="description" rows="3"
+        class="elegant-textarea">{{ collection.description if collection else '' }}</textarea>
+    </div>
+
+    <hr class="elegant-divider">
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary">
+        {% if editing %}Update{% else %}Create{% endif %}
+      </button>
+      <a href="/collections" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Tags{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">Tags</h1>
+
+  <form method="post" action="/tags/create" class="flex gap-3 mb-8">
+    <input type="text" name="name" placeholder="New tag name" required
+      class="elegant-input flex-1">
+    <button type="submit" class="btn-primary btn-sm">Add Tag</button>
+  </form>
+
+  {% if tags %}
+  <div class="elegant-card-static overflow-hidden">
+    {% for tag in tags %}
+    <div class="elegant-list-item">
+      <div class="flex items-center gap-3">
+        <span class="tag-badge">{{ tag.name }}</span>
+        <span class="text-sm text-[color:var(--text-muted)]">{{ tag.papers | length }} paper{{ 's' if tag.papers | length != 1 }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/papers?tag_id={{ tag.id }}" class="link-gold text-sm">View papers</a>
+        <form method="post" action="/tags/{{ tag.id }}/delete" onsubmit="return confirm('Delete this tag?')" class="inline">
+          <button type="submit" class="link-danger text-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-[color:var(--text-muted)] text-center py-12">No tags yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

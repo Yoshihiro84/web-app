@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Import BibTeX{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">Import BibTeX</h1>
+
+  {% if not entries and entries is not none %}
+  {% endif %}
+
+  {% if entries is none %}
+  <form method="post" action="/bibtex/import/preview" enctype="multipart/form-data" class="space-y-5">
+    <div>
+      <label class="elegant-label">Paste BibTeX</label>
+      <textarea name="bibtex_text" rows="12" placeholder="@article{key, ...}"
+        class="elegant-textarea font-mono text-sm">{{ bibtex_text }}</textarea>
+    </div>
+    <div>
+      <label class="elegant-label">Or upload .bib file</label>
+      <input type="file" name="bibtex_file" accept=".bib,.bibtex,.txt"
+        class="elegant-file-input mt-1">
+    </div>
+    <button type="submit" class="btn-primary">Preview</button>
+  </form>
+
+  {% else %}
+  {% if duplicates %}
+  <div class="elegant-alert elegant-alert-warning mb-5">
+    {{ duplicates | length }} duplicate(s) skipped (matching DOI or arXiv ID).
+  </div>
+  {% endif %}
+
+  {% if entries %}
+  <form method="post" action="/bibtex/import/confirm">
+    <input type="hidden" name="bibtex_text" value="{{ bibtex_text }}">
+
+    <div class="space-y-3 mb-8">
+      {% for entry in entries %}
+      <div class="elegant-card-static p-5 flex items-start gap-4">
+        <input type="checkbox" name="selected" value="{{ loop.index0 }}" checked
+          class="elegant-checkbox mt-1">
+        <div>
+          <p class="font-semibold text-[color:var(--text-primary)]">{{ entry.title }}</p>
+          {% if entry.authors %}<p class="text-sm text-[color:var(--text-secondary)] mt-1">{{ entry.authors }}</p>{% endif %}
+          <div class="text-xs text-[color:var(--text-muted)] mt-1">
+            {% if entry.year %}{{ entry.year }} &middot; {% endif %}
+            {% if entry.journal %}{{ entry.journal }} &middot; {% endif %}
+            {{ entry.bibtex_type }}
+            {% if entry.bibtex_key %} [{{ entry.bibtex_key }}]{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary">Import Selected ({{ entries | length }})</button>
+      <a href="/bibtex/import" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+  {% else %}
+  <div class="elegant-alert elegant-alert-warning">
+    No new entries to import (all duplicates or empty BibTeX).
+  </div>
+  <a href="/bibtex/import" class="link-gold inline-block mt-4">Try again</a>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

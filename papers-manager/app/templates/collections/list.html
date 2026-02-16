@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Collections{% endblock %}
+
+{% block content %}
+<div class="animate-slide-up">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="page-heading text-2xl">Collections</h1>
+    <a href="/collections/new" class="btn-primary btn-sm">+ New Collection</a>
+  </div>
+
+  {% if collections %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for col in collections %}
+    <a href="/collections/{{ col.id }}" class="elegant-card block p-6">
+      <h3 class="page-heading text-lg mb-1">{{ col.name }}</h3>
+      {% if col.description %}
+      <p class="text-sm text-[color:var(--text-secondary)] mt-1 line-clamp-2">{{ col.description }}</p>
+      {% endif %}
+      <p class="text-sm text-[color:var(--text-muted)] mt-3">{{ col.papers | length }} paper{{ 's' if col.papers | length != 1 }}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-20">
+    <p class="text-[color:var(--text-muted)] text-lg mb-4">No collections yet.</p>
+    <a href="/collections/new" class="link-gold">Create your first collection</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

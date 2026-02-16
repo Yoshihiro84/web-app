@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{% if editing %}Edit Paper{% else %}New Paper{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">{% if editing %}Edit Paper{% else %}New Paper{% endif %}</h1>
+
+  <form method="post" class="space-y-5">
+    <div>
+      <label class="elegant-label">Title *</label>
+      <input type="text" name="title" value="{{ paper.title if paper else '' }}" required
+        class="elegant-input">
+    </div>
+
+    <div>
+      <label class="elegant-label">Authors</label>
+      <input type="text" name="authors" value="{{ paper.authors if paper else '' }}" placeholder="Author1, Author2, ..."
+        class="elegant-input">
+    </div>
+
+    <div class="grid grid-cols-2 gap-5">
+      <div>
+        <label class="elegant-label">Year</label>
+        <input type="number" name="year" value="{{ paper.year if paper and paper.year else '' }}"
+          class="elegant-input">
+      </div>
+      <div>
+        <label class="elegant-label">Status</label>
+        <select name="status" class="elegant-select">
+          <option value="unread" {% if paper and paper.status == 'unread' %}selected{% endif %}>Unread</option>
+          <option value="reading" {% if paper and paper.status == 'reading' %}selected{% endif %}>Reading</option>
+          <option value="done" {% if paper and paper.status == 'done' %}selected{% endif %}>Done</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="elegant-label">Journal / Conference</label>
+      <input type="text" name="journal" value="{{ paper.journal if paper else '' }}"
+        class="elegant-input">
+    </div>
+
+    <div class="grid grid-cols-2 gap-5">
+      <div>
+        <label class="elegant-label">DOI</label>
+        <input type="text" name="doi" value="{{ paper.doi if paper and paper.doi else '' }}"
+          class="elegant-input">
+      </div>
+      <div>
+        <label class="elegant-label">arXiv ID</label>
+        <input type="text" name="arxiv_id" value="{{ paper.arxiv_id if paper and paper.arxiv_id else '' }}"
+          class="elegant-input">
+      </div>
+    </div>
+
+    <div>
+      <label class="elegant-label">URL</label>
+      <input type="text" name="url" value="{{ paper.url if paper else '' }}"
+        class="elegant-input">
+    </div>
+
+    <div>
+      <label class="elegant-label">Abstract</label>
+      <textarea name="abstract" rows="4"
+        class="elegant-textarea">{{ paper.abstract if paper else '' }}</textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-5">
+      <div>
+        <label class="elegant-label">BibTeX Key</label>
+        <input type="text" name="bibtex_key" value="{{ paper.bibtex_key if paper else '' }}"
+          class="elegant-input">
+      </div>
+      <div>
+        <label class="elegant-label">BibTeX Type</label>
+        <select name="bibtex_type" class="elegant-select">
+          {% for t in ["article", "inproceedings", "book", "phdthesis", "mastersthesis", "techreport", "misc"] %}
+          <option value="{{ t }}" {% if paper and paper.bibtex_type == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="elegant-label">Tags (comma-separated)</label>
+      <input type="text" name="tags_str" value="{{ paper.tags | map(attribute='name') | join(', ') if paper and paper.tags else '' }}" placeholder="machine-learning, NLP, transformer"
+        class="elegant-input">
+    </div>
+
+    <hr class="elegant-divider">
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary">
+        {% if editing %}Update{% else %}Create{% endif %}
+      </button>
+      <a href="{% if editing %}/papers/{{ paper.id }}{% else %}/papers{% endif %}" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Export BibTeX{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">Export BibTeX</h1>
+
+  {% if papers %}
+  <form method="post" action="/bibtex/export/download">
+    <div class="flex justify-between items-center mb-6">
+      <p class="text-sm text-[color:var(--text-secondary)]">Select papers to export (or leave all unchecked to export all).</p>
+      <button type="submit" class="btn-primary btn-sm">Download .bib</button>
+    </div>
+
+    <div class="space-y-3">
+      {% for paper in papers %}
+      <label class="elegant-card-static p-5 flex items-start gap-4 cursor-pointer block hover:border-[color:var(--line-medium)]" style="transition: border-color 0.15s">
+        <input type="checkbox" name="paper_ids" value="{{ paper.id }}"
+          class="elegant-checkbox mt-1">
+        <div>
+          <p class="font-semibold text-[color:var(--text-primary)]">{{ paper.title }}</p>
+          {% if paper.authors %}<p class="text-sm text-[color:var(--text-secondary)] mt-1">{{ paper.authors }}</p>{% endif %}
+          <div class="text-xs text-[color:var(--text-muted)] mt-1">
+            {% if paper.year %}{{ paper.year }}{% endif %}
+            {% if paper.bibtex_key %} &middot; {{ paper.bibtex_key }}{% endif %}
+          </div>
+        </div>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="mt-6">
+      <button type="submit" class="btn-primary">Download .bib</button>
+    </div>
+  </form>
+  {% else %}
+  <p class="text-[color:var(--text-muted)] text-center py-12">No papers to export. <a href="/papers/new" class="link-gold">Add some first</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

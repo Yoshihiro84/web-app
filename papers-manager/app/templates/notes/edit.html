@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Note{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <div class="mb-6">
+    <a href="/papers/{{ paper_id }}" class="link-gold text-sm">&larr; Back to paper</a>
+  </div>
+
+  <h1 class="page-heading text-2xl mb-8">Edit Note</h1>
+
+  <form method="post" class="space-y-5">
+    <div>
+      <label class="elegant-label">Content (Markdown supported)</label>
+      <textarea name="content" rows="10" required
+        class="elegant-textarea">{{ note.content }}</textarea>
+    </div>
+
+    <hr class="elegant-divider">
+    <div class="flex gap-3">
+      <button type="submit" class="btn-primary">Update</button>
+      <a href="/papers/{{ paper_id }}" class="btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

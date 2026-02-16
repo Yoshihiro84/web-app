@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Papers{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block content %}
+<div class="three-pane-container" id="threePaneApp">
+  <!-- Left Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <!-- All References -->
+      <a href="/papers" class="sidebar-item {% if not status and not tag_id and not collection_id %}sidebar-active{% endif %}">
+        <svg class="w-4 h-4 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        All References
+        <span class="ml-auto text-xs text-[color:var(--text-muted)]">{{ total_count }}</span>
+      </a>
+
+      <!-- Status Filters -->
+      <div class="sidebar-section">STATUS</div>
+      <a href="/papers?status=unread{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'unread' %}sidebar-active{% endif %}">
+        <span class="w-2 h-2 rounded-full bg-slate-400 mr-2 inline-block"></span>Unread
+      </a>
+      <a href="/papers?status=reading{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'reading' %}sidebar-active{% endif %}">
+        <span class="w-2 h-2 rounded-full bg-amber-400 mr-2 inline-block"></span>Reading
+      </a>
+      <a href="/papers?status=done{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'done' %}sidebar-active{% endif %}">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 inline-block"></span>Done
+      </a>
+
+      <!-- Collections -->
+      <div class="sidebar-section">COLLECTIONS</div>
+      {% for col in all_collections %}
+      <div class="sidebar-group">
+        <div class="sidebar-group-header {% if collection_id == col.id %}sidebar-active{% endif %}">
+          <button class="sidebar-toggle" data-target="col-{{ col.id }}">
+            <svg class="toggle-arrow w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <a href="/papers?collection_id={{ col.id }}{% if q %}&q={{ q }}{% endif %}" class="sidebar-group-link">
+            <svg class="w-4 h-4 mr-1.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            {{ col.name }}
+            <span class="ml-auto text-xs text-[color:var(--text-muted)]">{{ col.papers|length }}</span>
+          </a>
+        </div>
+        <div class="sidebar-group-items hidden" id="col-{{ col.id }}">
+          {% for p in col.papers %}
+          <a href="#" class="sidebar-subitem" data-paper-id="{{ p.id }}">{{ p.title }}</a>
+          {% else %}
+          <div class="text-xs text-[color:var(--text-muted)] px-6 py-1">Empty</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="text-xs text-[color:var(--text-muted)] px-3 py-1">No collections</div>
+      {% endfor %}
+
+      <!-- Tags -->
+      <div class="sidebar-section">TAGS</div>
+      {% for tag in all_tags %}
+      <a href="/papers?tag_id={{ tag.id }}{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if tag_id == tag.id %}sidebar-active{% endif %}">
+        <svg class="w-3 h-3 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        {{ tag.name }}
+      </a>
+      {% else %}
+      <div class="text-xs text-[color:var(--text-muted)] px-3 py-1">No tags</div>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <!-- Center Panel: Papers Table -->
+  <section class="center-panel" id="centerPanel">
+    <div class="center-panel-inner">
+      <!-- Toolbar -->
+      <div class="table-toolbar">
+        <form action="/papers" method="get" class="flex gap-2 flex-1">
+          {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+          {% if tag_id %}<input type="hidden" name="tag_id" value="{{ tag_id }}">{% endif %}
+          {% if collection_id %}<input type="hidden" name="collection_id" value="{{ collection_id }}">{% endif %}
+          <input type="text" name="q" value="{{ q or '' }}" placeholder="Search..."
+            class="flex-1 px-3 py-1.5">
+          <button type="submit" class="px-3 py-1.5">Search</button>
+        </form>
+        <a href="/papers/new" class="ml-2 px-3 py-1.5 whitespace-nowrap">+ New</a>
+      </div>
+
+      <!-- Table -->
+      {% if papers %}
+      <div class="table-wrapper">
+        <table class="papers-table">
+          <thead>
+            <tr>
+              <th class="w-5/12">Title</th>
+              <th class="w-3/12">Authors</th>
+              <th class="w-1/12">Year</th>
+              <th class="w-2/12">Journal</th>
+              <th class="w-1/12">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for paper in papers %}
+            <tr class="paper-row" data-paper-id="{{ paper.id }}">
+              <td class="font-medium truncate max-w-0">{{ paper.title }}</td>
+              <td class="truncate max-w-0">{{ paper.authors }}</td>
+              <td>{{ paper.year or '' }}</td>
+              <td class="truncate max-w-0">{{ paper.journal }}</td>
+              <td>
+                <span class="status-badge-btn status-badge status-{{ paper.status }}" data-status="{{ paper.status }}" title="Click to change status">{{ paper.status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if total_pages > 1 %}
+      <div class="table-pagination">
+        <span class="page-info">Page {{ page }}/{{ total_pages }} ({{ total_count }} items)</span>
+        <div class="flex gap-1">
+          {% if page > 1 %}
+          <a href="{{ base_url }}?page={{ page - 1 }}{{ extra_params }}" class="page-btn">Prev</a>
+          {% endif %}
+          {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+            <span class="page-btn page-btn-active">{{ p }}</span>
+            {% elif p <= 2 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
+            <a href="{{ base_url }}?page={{ p }}{{ extra_params }}" class="page-btn">{{ p }}</a>
+            {% elif p == 3 or p == total_pages - 2 %}
+            <span class="px-2 py-1 text-xs text-[color:var(--text-muted)]">...</span>
+            {% endif %}
+          {% endfor %}
+          {% if page < total_pages %}
+          <a href="{{ base_url }}?page={{ page + 1 }}{{ extra_params }}" class="page-btn">Next</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="flex-1 flex items-center justify-center">
+        <div class="text-center">
+          <p class="mb-3 text-[color:var(--text-muted)]">No papers found.</p>
+          <a href="/papers/new" class="link-gold text-sm">Add your first paper</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Right Preview Panel -->
+  <aside class="preview-panel" id="previewPanel">
+    <div class="preview-inner" id="previewContent">
+      <div class="preview-placeholder">
+        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p>Click a paper to preview</p>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

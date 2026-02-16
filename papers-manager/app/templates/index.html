@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Papers Manager - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+  <div class="hero-ornament">
+    <div class="hero-ornament-line"></div>
+    <div class="hero-ornament-diamond"></div>
+    <div class="hero-ornament-line"></div>
+  </div>
+  <h1 class="hero-title">Papers <span class="accent">Manager</span></h1>
+  <p class="hero-subtitle">文献管理システム — タグ・検索・読書メモ・BibTeXエクスポート</p>
+  <div class="flex justify-center gap-4">
+    <a href="/papers" class="btn-primary">Browse Papers</a>
+    <a href="/papers/new" class="btn-ghost">Add Paper</a>
+    <a href="/bibtex/import" class="btn-secondary">Import BibTeX</a>
+  </div>
+</div>
+{% endblock %}

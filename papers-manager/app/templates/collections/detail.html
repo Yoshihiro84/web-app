@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ collection.name }}{% endblock %}
+
+{% block content %}
+<div class="animate-slide-up">
+  <div class="mb-6">
+    <a href="/collections" class="link-gold text-sm">&larr; Back to collections</a>
+  </div>
+
+  <div class="flex justify-between items-start mb-8">
+    <div>
+      <h1 class="page-heading text-2xl">{{ collection.name }}</h1>
+      {% if collection.description %}
+      <p class="text-[color:var(--text-secondary)] mt-2">{{ collection.description }}</p>
+      {% endif %}
+    </div>
+    <div class="flex gap-3">
+      <a href="/collections/{{ collection.id }}/edit" class="btn-secondary btn-sm">Edit</a>
+      <form method="post" action="/collections/{{ collection.id }}/delete" onsubmit="return confirm('Delete this collection?')">
+        <button type="submit" class="btn-danger btn-sm">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Paper to Collection -->
+  <form method="post" action="/collections/{{ collection.id }}/add-paper" class="flex gap-3 mb-8">
+    <select name="paper_id" required class="elegant-select flex-1 max-w-md">
+      <option value="">-- Select a paper to add --</option>
+      {% for paper in available_papers %}
+      <option value="{{ paper.id }}">{{ paper.title }}{% if paper.authors %} — {{ paper.authors }}{% endif %}{% if paper.year %} ({{ paper.year }}){% endif %}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn-primary btn-sm">Add Paper</button>
+  </form>
+
+  {% if papers %}
+  <div class="space-y-4">
+    {% for paper in papers %}
+    <div class="paper-card">
+      <div class="flex-1">
+        <a href="/papers/{{ paper.id }}" class="paper-card-title">{{ paper.title }}</a>
+        {% if paper.authors %}
+        <p class="text-sm text-[color:var(--text-secondary)] mt-1">{{ paper.authors }}</p>
+        {% endif %}
+        <div class="flex items-center gap-3 mt-2 text-sm text-[color:var(--text-muted)]">
+          {% if paper.year %}<span>{{ paper.year }}</span>{% endif %}
+          {% if paper.journal %}<span>{{ paper.journal }}</span>{% endif %}
+        </div>
+      </div>
+      <form method="post" action="/collections/{{ collection.id }}/remove-paper/{{ paper.id }}" class="ml-4">
+        <button type="submit" class="link-danger text-sm">Remove</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% include "partials/_pagination.html" %}
+  {% else %}
+  <p class="text-[color:var(--text-muted)] text-center py-12">No papers in this collection yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% if flash_message %}
+<div class="mb-5 elegant-alert
+  {% if flash_type == 'error' %}elegant-alert-danger
+  {% elif flash_type == 'warning' %}elegant-alert-warning
+  {% else %}elegant-alert-success{% endif %}">
+  {{ flash_message }}
+</div>
+{% endif %}
