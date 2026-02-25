@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Import Paper{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <div class="mb-6">
+    <a href="/papers" class="link-gold text-sm">&larr; Back to papers</a>
+  </div>
+
+  <div class="elegant-card-static p-8">
+    <h1 class="page-heading text-2xl mb-6">Import Paper</h1>
+
+    {% if error %}
+    <div class="mb-6 p-4 rounded-lg" style="background:rgba(200,50,50,0.15);border:1px solid rgba(200,50,50,0.3)">
+      <p class="text-sm" style="color:#f88">{{ error }}</p>
+      {% if existing_id %}
+      <a href="/papers/{{ existing_id }}" class="link-gold text-sm">View existing paper</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="mb-6 p-4 rounded-lg" style="background:rgba(50,200,50,0.15);border:1px solid rgba(50,200,50,0.3)">
+      <p class="text-sm" style="color:#8f8">Paper saved!</p>
+      <a href="/papers/{{ paper_id }}" class="link-gold text-sm">View paper</a>
+    </div>
+    {% endif %}
+
+    {% if not success %}
+    <form method="post" action="/papers/import-from-bookmarklet">
+      <div class="mb-4">
+        <label class="elegant-label mb-2">Title</label>
+        <input type="text" name="title" value="{{ meta.title or '' }}" required class="elegant-input w-full">
+      </div>
+      <div class="mb-4">
+        <label class="elegant-label mb-2">Authors</label>
+        <input type="text" name="authors" value="{{ meta.authors or '' }}" class="elegant-input w-full">
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="elegant-label mb-2">Year</label>
+          <input type="number" name="year" value="{{ meta.year or '' }}" class="elegant-input w-full">
+        </div>
+        <div>
+          <label class="elegant-label mb-2">Journal</label>
+          <input type="text" name="journal" value="{{ meta.journal or '' }}" class="elegant-input w-full">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="elegant-label mb-2">DOI</label>
+          <input type="text" name="doi" value="{{ meta.doi or '' }}" class="elegant-input w-full">
+        </div>
+        <div>
+          <label class="elegant-label mb-2">arXiv ID</label>
+          <input type="text" name="arxiv_id" value="{{ meta.arxiv_id or '' }}" class="elegant-input w-full">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="elegant-label mb-2">URL</label>
+        <input type="text" name="url" value="{{ meta.url or '' }}" class="elegant-input w-full">
+      </div>
+      <div class="mb-4">
+        <label class="elegant-label mb-2">Abstract</label>
+        <textarea name="abstract" rows="4" class="elegant-textarea w-full">{{ meta.abstract or '' }}</textarea>
+      </div>
+      <div class="mb-6">
+        <label class="elegant-label mb-2">Tags (comma separated)</label>
+        <input type="text" name="tags_str" value="" placeholder="e.g. machine-learning, NLP" class="elegant-input w-full">
+      </div>
+      <button type="submit" class="btn-primary">Save Paper</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

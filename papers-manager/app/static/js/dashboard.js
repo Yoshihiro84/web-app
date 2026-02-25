@@ -137,6 +137,13 @@ document.addEventListener('DOMContentLoaded', function () {
       html += '</div>';
     }
 
+    // PDF embed
+    if (paper.pdf_drive_file_id) {
+      html += '<div class="preview-pdf-embed">';
+      html += '<iframe src="/api/papers/' + paper.id + '/pdf" class="preview-pdf-iframe" title="PDF Preview"></iframe>';
+      html += '</div>';
+    }
+
     // URL
     if (paper.url) {
       html += '<div style="margin-bottom:12px">';
@@ -144,8 +151,8 @@ document.addEventListener('DOMContentLoaded', function () {
       html += '</div>';
     }
 
-    // Abstract
-    if (paper.abstract) {
+    // Abstract (show only when no PDF to avoid clutter)
+    if (paper.abstract && !paper.pdf_drive_file_id) {
       html += '<div class="preview-section-title">Abstract</div>';
       html += '<div class="preview-abstract">' + escapeHtml(paper.abstract) + '</div>';
     }
@@ -244,6 +251,45 @@ document.addEventListener('DOMContentLoaded', function () {
       loadPreview(paperId);
     });
   });
+
+  // Preview panel resize
+  (function () {
+    var handle = document.getElementById('resizeHandle');
+    var panel = document.getElementById('previewPanel');
+    if (!handle || !panel) return;
+
+    var isResizing = false;
+    var savedWidth = localStorage.getItem('previewPanelWidth');
+    if (savedWidth) {
+      panel.style.width = savedWidth + 'px';
+    }
+
+    handle.addEventListener('mousedown', function (e) {
+      isResizing = true;
+      handle.classList.add('active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!isResizing) return;
+      var containerRight = document.getElementById('threePaneApp').getBoundingClientRect().right;
+      var newWidth = containerRight - e.clientX;
+      if (newWidth < 200) newWidth = 200;
+      if (newWidth > window.innerWidth * 0.6) newWidth = window.innerWidth * 0.6;
+      panel.style.width = newWidth + 'px';
+    });
+
+    document.addEventListener('mouseup', function () {
+      if (!isResizing) return;
+      isResizing = false;
+      handle.classList.remove('active');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem('previewPanelWidth', parseInt(panel.style.width));
+    });
+  })();
 
   // Expose delete function globally
   window.deletePaper = function (paperId) {

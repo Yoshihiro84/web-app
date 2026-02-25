@@ -37,6 +37,7 @@ class Paper(Base):
     bibtex_key = Column(String(200), default="")
     bibtex_type = Column(String(50), default="article")
     status = Column(String(20), default="unread")
+    pdf_drive_file_id = Column(String(200), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional, Tuple
 
 import bibtexparser
@@ -6,6 +7,53 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bibdatabase import BibDatabase
 
 from app.models import Paper
+
+_LATEX_ACCENTS = {
+    '`': '\u0300', "'": '\u0301', '^': '\u0302', '"': '\u0308',
+    '~': '\u0303', '=': '\u0304', '.': '\u0307', 'u': '\u0306',
+    'v': '\u030C', 'H': '\u030B', 'c': '\u0327', 'd': '\u0323',
+    'b': '\u0331', 'k': '\u0328', 'r': '\u030A',
+}
+
+_LATEX_COMMANDS = {
+    r'\aa': 'å', r'\AA': 'Å', r'\ae': 'æ', r'\AE': 'Æ',
+    r'\oe': 'œ', r'\OE': 'Œ', r'\o': 'ø', r'\O': 'Ø',
+    r'\ss': 'ß', r'\i': 'ı', r'\j': 'ȷ', r'\l': 'ł', r'\L': 'Ł',
+    r'\sim': '~', r'\&': '&', r'\$': '$', r'\%': '%', r'\#': '#',
+    r'\textendash': '–', r'\textemdash': '—',
+    r'\textbackslash': '\\', r'\textblackslash': '\\',
+}
+
+
+def _decode_latex(text: str) -> str:
+    """Convert LaTeX accents and commands to Unicode."""
+    if not text:
+        return text
+
+    # Replace known commands first
+    for cmd, replacement in _LATEX_COMMANDS.items():
+        text = text.replace(cmd, replacement)
+
+    # Handle accent commands: \"{a}, \'{e}, \v{s}, etc.
+    def replace_accent(m):
+        cmd = m.group(1)
+        char = m.group(2)
+        combining = _LATEX_ACCENTS.get(cmd)
+        if combining and len(char) == 1:
+            import unicodedata
+            return unicodedata.normalize('NFC', char + combining)
+        return char
+
+    text = re.sub(r'\\([`\'\\^"~=.uUvHcdbkr])\{([^}]*)\}', replace_accent, text)
+    text = re.sub(r'\\([`\'\\^"~=.uUvHcdbkr])\s*([A-Za-z])', replace_accent, text)
+
+    # Remove remaining braces and LaTeX noise
+    text = re.sub(r'\\(?:rm|it|bf|text[a-z]+)\b\s*', '', text)
+    text = re.sub(r'\\;|\\,|\\!|\\ ', ' ', text)
+    text = re.sub(r'\$([^$]*)\$', r'\1', text)
+    text = text.replace('{', '').replace('}', '')
+
+    return text.strip()
 
 
 def parse_bibtex(bibtex_str: str) -> List[dict]:
@@ -18,13 +66,13 @@ def parse_bibtex(bibtex_str: str) -> List[dict]:
         entries.append({
             "bibtex_key": entry.get("ID", ""),
             "bibtex_type": entry.get("ENTRYTYPE", "article"),
-            "title": entry.get("title", "").strip("{}"),
-            "authors": entry.get("author", ""),
+            "title": _decode_latex(entry.get("title", "").strip("{}")),
+            "authors": _decode_latex(entry.get("author", "")),
             "year": _safe_int(entry.get("year")),
             "doi": entry.get("doi"),
             "arxiv_id": _extract_arxiv(entry),
-            "abstract": entry.get("abstract", ""),
-            "journal": entry.get("journal", "") or entry.get("booktitle", ""),
+            "abstract": _decode_latex(entry.get("abstract", "")),
+            "journal": _decode_latex(entry.get("journal", "") or entry.get("booktitle", "")),
             "url": entry.get("url", ""),
         })
     return entries

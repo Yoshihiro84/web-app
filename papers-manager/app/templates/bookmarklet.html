@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Bookmarklet{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">Bookmarklet</h1>
+
+  <div class="elegant-card-static p-8">
+    <h2 class="page-heading text-lg mb-2">Save to Papers Manager</h2>
+    <p class="text-[color:var(--text-muted)] text-sm mb-6">
+      Zotero Connectorのように、論文ページからワンクリックで登録できます。<br>
+      Safari / Firefox / Chrome すべてで動作します。
+    </p>
+
+    <!-- Step 1: Drag to bookmark bar -->
+    <div class="mb-6">
+      <h3 class="page-heading text-base mb-3">方法1: ドラッグ&ドロップ</h3>
+      <div class="p-5 rounded-lg text-center" style="background:rgba(100,100,200,0.1);border:1px solid rgba(100,100,200,0.2)">
+        <p class="text-xs text-[color:var(--text-muted)] mb-3">このボタンをブックマークバーにドラッグ:</p>
+        <a id="bookmarkletLink" class="inline-block px-6 py-3 rounded-lg font-semibold text-sm no-underline"
+          style="background:var(--gold);color:#1a1a2e;cursor:grab"
+          href="#">Save to Papers</a>
+      </div>
+    </div>
+
+    <!-- Step 2: Manual (for Safari) -->
+    <div class="mb-6">
+      <h3 class="page-heading text-base mb-3">方法2: 手動登録（Safari向け）</h3>
+      <ol class="text-sm text-[color:var(--text-secondary)] space-y-2 mb-4" style="list-style:decimal;padding-left:1.5rem">
+        <li>このページをブックマークに追加（<kbd style="background:#16213e;padding:2px 6px;border-radius:3px;font-size:11px">Cmd+D</kbd>）</li>
+        <li>ブックマークを編集 → URLを下のコードに置き換え</li>
+      </ol>
+      <div class="relative">
+        <textarea id="bookmarkletCode" readonly rows="3"
+          class="elegant-textarea w-full text-xs" style="font-family:monospace;resize:none"></textarea>
+        <button id="copyBtn" class="btn-secondary btn-sm" style="position:absolute;top:8px;right:8px;font-size:11px">Copy</button>
+      </div>
+    </div>
+
+    <hr class="elegant-divider">
+
+    <h3 class="page-heading text-base mb-3">使い方</h3>
+    <ol class="text-sm text-[color:var(--text-secondary)] space-y-1 mb-6" style="list-style:decimal;padding-left:1.5rem">
+      <li>論文のページを開く（arXiv, Google Scholar, 出版社サイトなど）</li>
+      <li>ブックマークの「Save to Papers」をクリック</li>
+      <li>右下にパネルが表示される → メタデータを確認して「Save Paper」</li>
+    </ol>
+
+    <h3 class="page-heading text-base mb-3">対応サイト</h3>
+    <ul class="text-sm text-[color:var(--text-secondary)] space-y-1" style="list-style:disc;padding-left:1.5rem">
+      <li><strong>arXiv</strong> — タイトル、著者、abstract、arXiv ID</li>
+      <li><strong>Google Scholar</strong> — 検索結果の最初のエントリ</li>
+      <li><strong>出版社サイト</strong> — HTMLメタタグ（citation_title, DC.title 等）から自動抽出</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function() {
+  var SERVER = location.origin;
+  var bookmarkletCode = {{ bookmarklet_js | tojson }};
+  bookmarkletCode = bookmarkletCode.replace('__SERVER__', SERVER);
+
+  var encoded = 'javascript:' + encodeURIComponent(bookmarkletCode);
+  document.getElementById('bookmarkletLink').href = encoded;
+  document.getElementById('bookmarkletCode').value = encoded;
+
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    var textarea = document.getElementById('bookmarkletCode');
+    textarea.select();
+    document.execCommand('copy');
+    this.textContent = 'Copied!';
+    var btn = this;
+    setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+  });
+})();
+</script>
+{% endblock %}

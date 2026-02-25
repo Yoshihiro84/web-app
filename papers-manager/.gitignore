@@ -1,0 +1,6 @@
+# Local secrets
+/drive_client_secret.json
+/drive_token.json
+
+# Local virtual environment
+/venv/

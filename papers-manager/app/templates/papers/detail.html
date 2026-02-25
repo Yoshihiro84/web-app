@@ -60,6 +60,34 @@
     </div>
     {% endif %}
 
+    <!-- PDF Section -->
+    <div class="mb-5">
+      <span class="section-label">PDF (Google Drive)</span>
+      <div class="mt-2">
+        {% if paper.pdf_drive_file_id %}
+        <div class="flex items-center gap-3 mb-3">
+          <a href="/api/papers/{{ paper.id }}/pdf" target="_blank" class="btn-primary btn-sm">Open in New Tab</a>
+          <button onclick="deletePdf({{ paper.id }})" class="btn-danger btn-sm">Delete from Drive</button>
+        </div>
+        <iframe src="/api/papers/{{ paper.id }}/pdf" style="width:100%;height:600px;border:1px solid var(--border-subtle);border-radius:8px;background:#222"></iframe>
+        {% elif drive_configured %}
+        <form id="pdfUploadForm" enctype="multipart/form-data" class="flex items-center gap-3">
+          <input type="file" name="pdf_file" accept=".pdf,application/pdf" required
+            class="text-sm text-[color:var(--text-secondary)]">
+          <button type="submit" class="btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:4px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Google Drive に同期
+          </button>
+        </form>
+        <p id="pdfUploadStatus" class="text-xs text-[color:var(--text-muted)] mt-1"></p>
+        {% else %}
+        <p class="text-sm text-[color:var(--text-muted)]">
+          Google Driveが未設定です。<a href="/settings" class="link-gold">Settings</a> から連携してください。
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
     <hr class="elegant-divider">
     <div class="flex gap-3">
       <a href="/papers/{{ paper.id }}/edit" class="btn-secondary btn-sm">Edit</a>
@@ -102,4 +130,39 @@
     </form>
   </div>
 </div>
+
+<script>
+  var pdfForm = document.getElementById('pdfUploadForm');
+  if (pdfForm) {
+    pdfForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var formData = new FormData(pdfForm);
+      var status = document.getElementById('pdfUploadStatus');
+      status.textContent = 'Uploading...';
+      fetch('/api/papers/{{ paper.id }}/pdf', {
+        method: 'POST',
+        body: formData
+      }).then(function(res) {
+        if (!res.ok) return res.json().then(function(d) { throw new Error(d.detail || 'Upload failed'); });
+        return res.json();
+      }).then(function() {
+        location.reload();
+      }).catch(function(err) {
+        status.textContent = 'Error: ' + err.message;
+      });
+    });
+  }
+
+  function deletePdf(paperId) {
+    if (!confirm('Delete PDF from Google Drive?')) return;
+    fetch('/api/papers/' + paperId + '/pdf', { method: 'DELETE' })
+      .then(function(res) {
+        if (!res.ok) throw new Error('Failed');
+        location.reload();
+      })
+      .catch(function() {
+        alert('Failed to delete PDF');
+      });
+  }
+</script>
 {% endblock %}

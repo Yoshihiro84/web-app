@@ -9,9 +9,14 @@
   <!-- Left Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-inner">
+      <div class="sidebar-top">
+        <p class="sidebar-kicker">Workspace</p>
+        <h2 class="sidebar-title">Research Library</h2>
+      </div>
+
       <!-- All References -->
       <a href="/papers" class="sidebar-item {% if not status and not tag_id and not collection_id %}sidebar-active{% endif %}">
-        <svg class="w-4 h-4 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <svg class="w-3.5 h-3.5 mr-2 inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
         All References
         <span class="ml-auto text-xs text-[color:var(--text-muted)]">{{ total_count }}</span>
       </a>
@@ -19,13 +24,13 @@
       <!-- Status Filters -->
       <div class="sidebar-section">STATUS</div>
       <a href="/papers?status=unread{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'unread' %}sidebar-active{% endif %}">
-        <span class="w-2 h-2 rounded-full bg-slate-400 mr-2 inline-block"></span>Unread
+        <span class="w-3.5 h-3.5 rounded-full bg-slate-400/80 mr-2 inline-block shrink-0"></span>Unread
       </a>
       <a href="/papers?status=reading{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'reading' %}sidebar-active{% endif %}">
-        <span class="w-2 h-2 rounded-full bg-amber-400 mr-2 inline-block"></span>Reading
+        <span class="w-3.5 h-3.5 rounded-full bg-amber-400/80 mr-2 inline-block shrink-0"></span>Reading
       </a>
       <a href="/papers?status=done{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if status == 'done' %}sidebar-active{% endif %}">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 inline-block"></span>Done
+        <span class="w-3.5 h-3.5 rounded-full bg-emerald-400/80 mr-2 inline-block shrink-0"></span>Done
       </a>
 
       <!-- Collections -->
@@ -34,10 +39,10 @@
       <div class="sidebar-group">
         <div class="sidebar-group-header {% if collection_id == col.id %}sidebar-active{% endif %}">
           <button class="sidebar-toggle" data-target="col-{{ col.id }}">
-            <svg class="toggle-arrow w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg class="toggle-arrow w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
           </button>
           <a href="/papers?collection_id={{ col.id }}{% if q %}&q={{ q }}{% endif %}" class="sidebar-group-link">
-            <svg class="w-4 h-4 mr-1.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            <svg class="w-3.5 h-3.5 mr-2 inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
             {{ col.name }}
             <span class="ml-auto text-xs text-[color:var(--text-muted)]">{{ col.papers|length }}</span>
           </a>
@@ -58,7 +63,7 @@
       <div class="sidebar-section">TAGS</div>
       {% for tag in all_tags %}
       <a href="/papers?tag_id={{ tag.id }}{% if q %}&q={{ q }}{% endif %}" class="sidebar-item {% if tag_id == tag.id %}sidebar-active{% endif %}">
-        <svg class="w-3 h-3 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        <svg class="w-3.5 h-3.5 mr-2 inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
         {{ tag.name }}
       </a>
       {% else %}
@@ -70,6 +75,17 @@
   <!-- Center Panel: Papers Table -->
   <section class="center-panel" id="centerPanel">
     <div class="center-panel-inner">
+      <!-- Panel Header -->
+      <div class="panel-heading">
+        <div>
+          <p class="panel-heading-kicker">Knowledge Base</p>
+          <h1 class="panel-heading-title">
+            {% if status %}{{ status | upper }}{% elif tag_id %}TAG FILTER{% elif collection_id %}COLLECTION{% else %}PAPERS{% endif %}
+          </h1>
+          <p class="panel-heading-subtitle">Focused research tracking for deep work.</p>
+        </div>
+        <span class="panel-heading-count">{{ total_count }} references</span>
+      </div>
       <!-- Toolbar -->
       <div class="table-toolbar">
         <form action="/papers" method="get" class="flex gap-2 flex-1">
@@ -77,10 +93,10 @@
           {% if tag_id %}<input type="hidden" name="tag_id" value="{{ tag_id }}">{% endif %}
           {% if collection_id %}<input type="hidden" name="collection_id" value="{{ collection_id }}">{% endif %}
           <input type="text" name="q" value="{{ q or '' }}" placeholder="Search..."
-            class="flex-1 px-3 py-1.5">
-          <button type="submit" class="px-3 py-1.5">Search</button>
+            class="flex-1 px-3 py-1.5 table-search-input">
+          <button type="submit" class="px-3 py-1.5 table-action-btn table-action-secondary">Search</button>
         </form>
-        <a href="/papers/new" class="ml-2 px-3 py-1.5 whitespace-nowrap">+ New</a>
+        <a href="/papers/new" class="ml-2 px-3 py-1.5 whitespace-nowrap table-action-btn table-action-primary">+ New</a>
       </div>
 
       <!-- Table -->
@@ -99,8 +115,8 @@
           <tbody>
             {% for paper in papers %}
             <tr class="paper-row" data-paper-id="{{ paper.id }}">
-              <td class="font-medium truncate max-w-0">{{ paper.title }}</td>
-              <td class="truncate max-w-0">{{ paper.authors }}</td>
+              <td class="font-medium truncate max-w-0 paper-title-cell">{{ paper.title }}</td>
+              <td class="truncate max-w-0 paper-authors-cell">{{ paper.authors }}</td>
               <td>{{ paper.year or '' }}</td>
               <td class="truncate max-w-0">{{ paper.journal }}</td>
               <td>
@@ -146,6 +162,9 @@
       {% endif %}
     </div>
   </section>
+
+  <!-- Resize Handle -->
+  <div class="resize-handle" id="resizeHandle"></div>
 
   <!-- Right Preview Panel -->
   <aside class="preview-panel" id="previewPanel">

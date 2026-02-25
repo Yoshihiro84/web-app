@@ -62,6 +62,10 @@ def delete_paper(db: Session, paper_id: int) -> bool:
     paper = db.query(Paper).filter(Paper.id == paper_id).first()
     if not paper:
         return False
+    # Delete associated PDF from Google Drive
+    if paper.pdf_drive_file_id:
+        from app.services import drive_service
+        drive_service.delete_pdf(paper.pdf_drive_file_id)
     db.delete(paper)
     db.commit()
     return True

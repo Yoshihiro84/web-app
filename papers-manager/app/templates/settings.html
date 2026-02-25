@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-slide-up">
+  <h1 class="page-heading text-2xl mb-8">Settings</h1>
+
+  {% if error %}
+  <div class="mb-6 p-4 rounded-lg" style="background:rgba(200,50,50,0.15);border:1px solid rgba(200,50,50,0.3)">
+    <p class="text-sm" style="color:#f88">{{ error }}</p>
+  </div>
+  {% endif %}
+
+  {% if request.query_params.get('saved') %}
+  <div class="mb-6 p-4 rounded-lg" style="background:rgba(50,200,50,0.15);border:1px solid rgba(50,200,50,0.3)">
+    <p class="text-sm" style="color:#8f8">Google Drive connected!</p>
+  </div>
+  {% endif %}
+
+  {% if request.query_params.get('disconnected') %}
+  <div class="mb-6 p-4 rounded-lg" style="background:rgba(50,200,50,0.15);border:1px solid rgba(50,200,50,0.3)">
+    <p class="text-sm" style="color:#8f8">Google Drive disconnected.</p>
+  </div>
+  {% endif %}
+
+  <!-- Google Drive Section -->
+  <div class="elegant-card-static p-8">
+    <h2 class="page-heading text-lg mb-2">Google Drive</h2>
+    <p class="text-[color:var(--text-muted)] text-sm mb-6">PDFファイルをGoogle Driveに保存・管理します。</p>
+
+    {% if drive.configured %}
+    <!-- Connected state -->
+    <div class="mb-5 p-4 rounded-lg" style="background:rgba(50,200,50,0.1);border:1px solid rgba(50,200,50,0.2)">
+      <div class="flex items-center gap-2 mb-2">
+        <span style="color:#8f8;font-size:18px">&#10003;</span>
+        <span class="text-sm font-semibold" style="color:#8f8">Connected</span>
+      </div>
+      <p class="text-xs text-[color:var(--text-muted)]">Folder ID: {{ drive.folder_id }}</p>
+    </div>
+
+    <div class="flex gap-3">
+      <button id="btnTest" class="btn-secondary btn-sm">接続テスト</button>
+      <form method="post" action="/settings/drive/disconnect" onsubmit="return confirm('Google Driveとの連携を解除しますか？')">
+        <button type="submit" class="btn-danger btn-sm">連携解除</button>
+      </form>
+    </div>
+    <p id="testResult" class="text-xs mt-2" style="display:none"></p>
+
+    {% else %}
+    <!-- Setup form -->
+    <div class="mb-5 p-4 rounded-lg" style="background:rgba(100,100,200,0.1);border:1px solid rgba(100,100,200,0.2)">
+      <p class="text-xs text-[color:var(--text-secondary)] leading-relaxed">
+        <strong>Setup手順:</strong><br>
+        1. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="link-gold">Google Cloud Console</a> でOAuthクライアントIDを作成（種類: ウェブアプリケーション）<br>
+        2. リダイレクトURIに <code class="text-xs" style="color:#e0c97f">http://localhost:8000/settings/drive/callback</code> を追加<br>
+        3. JSONをダウンロードして下のフォームでアップロード<br>
+        4. Google DriveでPDF保存用フォルダを作成し、URLの末尾のIDをコピー
+      </p>
+    </div>
+
+    <form method="post" action="/settings/drive" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label class="elegant-label mb-2">OAuth Client Secret (JSON)</label>
+        <input type="file" name="client_secret_file" accept=".json,application/json" required
+          class="text-sm text-[color:var(--text-secondary)]">
+      </div>
+      <div class="mb-6">
+        <label class="elegant-label mb-2">Drive Folder ID</label>
+        <input type="text" name="folder_id" required placeholder="例: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ"
+          class="elegant-input w-full">
+      </div>
+      <button type="submit" class="btn-primary btn-sm">Google アカウントで認証する</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- Bookmarklet Section -->
+  <div class="elegant-card-static p-8 mt-6">
+    <h2 class="page-heading text-lg mb-2">Bookmarklet</h2>
+    <p class="text-[color:var(--text-muted)] text-sm mb-4">Safari/Firefox/Chromeで使えるブラウザ連携ツール。論文ページからワンクリックで登録できます。</p>
+    <a href="/settings/bookmarklet" class="btn-secondary btn-sm">セットアップ</a>
+  </div>
+</div>
+
+<script>
+  var btnTest = document.getElementById('btnTest');
+  if (btnTest) {
+    btnTest.addEventListener('click', function() {
+      var result = document.getElementById('testResult');
+      result.style.display = 'block';
+      result.style.color = 'var(--text-muted)';
+      result.textContent = 'Testing...';
+      btnTest.disabled = true;
+
+      fetch('/settings/drive/test', { method: 'POST' })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          result.style.color = data.ok ? '#8f8' : '#f88';
+          result.textContent = data.ok ? 'Connected!' : 'Error: ' + data.message;
+          btnTest.disabled = false;
+        })
+        .catch(function() {
+          result.style.color = '#f88';
+          result.textContent = 'Connection failed';
+          btnTest.disabled = false;
+        });
+    });
+  }
+</script>
+{% endblock %}

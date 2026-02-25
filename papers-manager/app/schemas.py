@@ -14,6 +14,7 @@ class PaperCreate(BaseModel):
     bibtex_key: str = ""
     bibtex_type: str = "article"
     status: str = "unread"
+    pdf_drive_file_id: Optional[str] = None
     tags_str: str = ""
 
 
@@ -29,6 +30,7 @@ class PaperUpdate(BaseModel):
     bibtex_key: str = ""
     bibtex_type: str = "article"
     status: str = "unread"
+    pdf_drive_file_id: Optional[str] = None
     tags_str: str = ""
 
 
